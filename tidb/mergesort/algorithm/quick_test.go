@@ -11,6 +11,7 @@ package algorithm
 
 import (
 	"math/rand"
+	"pingcap/talentplan/tidb/mergesort/task"
 	"testing"
 	"time"
 )
@@ -25,7 +26,7 @@ func TestMinQuick_Sort(t *testing.T) {
 		s = append(s, e)
 	}
 
-	h := NewQuick(&MinInt64Slice{s})
+	h := NewQuick(&task.MinInt64Slice{s})
 	h.Sort()
 	t.Log(s)
 }

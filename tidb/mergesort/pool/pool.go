@@ -1,5 +1,8 @@
 /*
-配置任务buffer，并发的worker数量；idle goroutine最大空闲时间，超时回收goroutine
+goroutine pool实现以下功能:
+1.配置任务buffer，并发的worker数量；
+2.按需创建
+3.idle goroutine最大空闲时间，超时自动回收goroutine
 */
 package pool
 
@@ -44,7 +47,8 @@ func NewPool(cfg *Config) *Pool {
 
 func (p *Pool) Put(t Task) *Pool {
 	select {
-	// 如果worker数量未到上限,就创建一个worker
+	// 按需创建：如果worker数量未到上限,就创建一个worker；
+	// 优先放入workersChan
 	case p.workersChan <- struct{}{}:
 		p.wg.Add(1)
 		go p.work(t)
@@ -88,7 +92,7 @@ func (p *Pool) work(t Task) {
 			t.RunError(err)
 		}
 		select {
-		// 超时仍未收到新的任务
+		// 超时回收：超时仍未收到新的任务，退出当前的任务
 		case <-timer.C:
 			return
 		case newTask, ok := <-p.waitingChan:
@@ -98,7 +102,6 @@ func (p *Pool) work(t Task) {
 			if newTask == nil {
 				return
 			}
-
 			// To ensure the channel is empty after a call to Stop, check the
 			// return value and drain the channel.
 			// For example, assuming the program has not received from t.C already:

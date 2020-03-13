@@ -29,22 +29,38 @@ func prepareData(src []int64) {
 func TestHeapMerge_Sort(t *testing.T) {
 	k := 6
 	sortedSlices := make([]*SortedSlice, 0, k)
-	lens := []int{2, 2, 4, 3, 2, 2, 3, 4, 3, 7,}
+	lens := []int{200, 200, 400, 300, 200, 200, 300, 40, 300, 700,}
 	for i := 0; i < k; i++ {
 		s := make([]int64, lens[i])
 		prepareData(s)
 		sortedSlices = append(sortedSlices, NewSortedSlice(s))
 	}
 	merge := NewHeapMerge(sortedSlices)
-	mergedSlice := merge.Sort()
-	merged2Slice := make([]int64, len(mergedSlice))
-	copy(merged2Slice, mergedSlice)
+	merge.Sort()
+	//merged2Slice := make([]int64, len(mergedSlice))
+	//copy(merged2Slice, mergedSlice)
+}
 
-	sort.Slice(merged2Slice, func(i, j int) bool { return merged2Slice[i] < merged2Slice[j] })
-	for i := 0; i < len(mergedSlice); i++ {
-		if mergedSlice[i] != merged2Slice[i] {
-			t.Failed()
-		}
+func BenchmarkHeapMerge_Sort(b *testing.B) {
+	k := 6
+	sortedSlices := make([]*SortedSlice, 0, k)
+	lens := []int{2000, 2000, 4000, 3000, 2000, 2000, 3000, 4000, 3000, 7000,}
+	for i := 0; i < k; i++ {
+		s := make([]int64, lens[i])
+		prepareData(s)
+		sortedSlices = append(sortedSlices, NewSortedSlice(s))
 	}
+	for i := 0; i < k; i++ {
+		s := make([]int64, lens[i])
+		prepareData(s)
+		sortedSlices = append(sortedSlices, NewSortedSlice(s))
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
 
+		b.StartTimer()
+		merge := NewHeapMerge(sortedSlices)
+		merge.Sort()
+	}
 }

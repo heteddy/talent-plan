@@ -5,6 +5,8 @@
 @Time : 2020/3/12 23:59
 @Author : teddy
 @File : heap_merge.go
+
+通过最小堆/最大堆实现多路归并merge
 */
 
 package algorithm

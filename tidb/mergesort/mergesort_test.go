@@ -26,7 +26,6 @@ type sortTestSuite struct{}
 
 func (s *sortTestSuite) TestMergeSort(c *check.C) {
 	lens := []int{1, 3, 5, 7, 11, 13, 17, 19, 23, 29, 1024, 1 << 13, 1 << 17, 1 << 19, 1 << 20}
-	//lens := []int{11, 13, 17, 19, 23, 29, 100}
 
 	for i := range lens {
 		src := make([]int64, lens[i])
@@ -35,8 +34,6 @@ func (s *sortTestSuite) TestMergeSort(c *check.C) {
 		copy(expect, src)
 		MergeSort(src)
 		sort.Slice(expect, func(i, j int) bool { return expect[i] < expect[j] })
-		//log.Println("   src:",src)
-		//log.Println("expect:",expect)
 		for i := 0; i < len(src); i++ {
 			c.Assert(src[i], check.Equals, expect[i])
 		}

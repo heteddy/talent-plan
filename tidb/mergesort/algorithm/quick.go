@@ -9,6 +9,8 @@
 
 package algorithm
 
+import "sort"
+
 type Sorter interface {
 	Sort()
 	GetSortable() SortableSlice
@@ -26,7 +28,12 @@ func (q *Quick) Sort() {
 	if q.slice.Len() <= 1 {
 		return
 	}
-	q.quick_sort(0, q.slice.Len()-1)
+	//q.quick_sort(0, q.slice.Len()-1)
+	s := q.slice.GetSlice()
+	// 原来sort slice那么快
+	sort.Slice(s, func(i, j int) bool {
+		return s[i] < s[j]
+	})
 }
 
 func (q *Quick) GetSortable() SortableSlice {

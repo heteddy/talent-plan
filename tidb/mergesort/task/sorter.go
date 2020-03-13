@@ -70,9 +70,7 @@ func (m *ConcurrentSorter) sort() {
 		if m.taskNum == count {
 			end = len(m.sortingArray)
 		}
-
 		t := NewSortTask(m.sortingArray[start:end], m.sortedChan)
-
 		start = end
 		m.pool.Put(t)
 		count++
@@ -97,7 +95,6 @@ loop:
 			}
 		}
 	}
-
 	mergeTask := NewMergeTask(sortedSlices, mergedChan)
 	// 为避免死锁可以另外启动一个协程写入
 	m.pool.Put(mergeTask)
