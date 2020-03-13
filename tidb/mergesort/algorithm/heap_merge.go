@@ -136,17 +136,21 @@ func (h *HeapMerge) Sort() []int64 {
 		//log.Println("merging:", c.slice)
 		length += len(c.slice)
 	}
-	mergeSlice := make([]int64, 0, length)
+
+	mergeSlice := make([]int64, length, length)
+	mergeSliceIndex := 0
 loop:
 	for {
 		v, err := h.Pop()
 		if err != nil {
 			break loop
 		} else {
-			mergeSlice = append(mergeSlice, v)
+			// 替换掉 mergeSlice = append(mergeSlice,v) 节省了大约10ms
+			mergeSlice[mergeSliceIndex] = v
+			//mergeSlice = append(mergeSlice, v)
 		}
+		mergeSliceIndex++
 	}
-	//log.Println(" merged:", mergeSlice)
 	return mergeSlice
 
 }

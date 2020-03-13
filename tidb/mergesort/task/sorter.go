@@ -45,14 +45,14 @@ type ConcurrentSorter struct {
 
 func NewConcurrent(src []int64) Sorter {
 	// 拆分成子任务并行完成
-	taskNum := runtime.NumCPU() * 2
+	taskNum := runtime.NumCPU()
 	return &ConcurrentSorter{
 		sortedChan: make(chan *MinInt64Slice, 1),
 		//mergeRetChan: make(chan []int64),
 		sortingArray: src,
 		pool: pool.NewPool(&pool.Config{
 			QSize:   1,
-			Workers: taskNum,
+			Workers: runtime.NumCPU(),
 			MaxIdle: time.Second * 10,
 		}),
 		taskNum: taskNum,
