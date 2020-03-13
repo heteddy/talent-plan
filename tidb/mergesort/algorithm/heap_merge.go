@@ -32,6 +32,18 @@ type Iterator struct {
 	index int
 }
 
+func (i *Iterator) HasNext() bool {
+	return i.index < len(i.slice)-1
+}
+
+func (i *Iterator) Next() {
+	i.index++
+}
+
+func (i *Iterator) Value() int64 {
+	return i.slice[i.index]
+}
+
 type SortedSlice struct {
 	slice []int64
 	Iterator
@@ -47,17 +59,7 @@ func NewSortedSlice(slice []int64) *SortedSlice {
 	}
 }
 
-func (i *Iterator) HasNext() bool {
-	return i.index < len(i.slice)-1
-}
 
-func (i *Iterator) Next() {
-	i.index++
-}
-
-func (i *Iterator) Value() int64 {
-	return i.slice[i.index]
-}
 
 type HeapMerge struct {
 	nodes []*SortedSlice
@@ -133,7 +135,6 @@ func (h *HeapMerge) Sort() []int64 {
 	length := 0
 
 	for _, c := range h.nodes {
-		//log.Println("merging:", c.slice)
 		length += len(c.slice)
 	}
 

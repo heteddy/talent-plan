@@ -19,6 +19,62 @@ Go 语言实现一个16M的整数(int64)多路归并的数组排序
 + 合并有序切片algorithm.heap_merge.go
     通不采用2路循环合并，避免分配过多的内存碎片。通过堆实现多路的有序切片的合并，额外申请一倍的内存用于存放合并结果
 
+
+
+### 归并算法
+输入：n路待合并的有序slice
+输出：有序slice
+
+堆node定义为一个SortedSlice，实现了hasNext函数，用于迭代到当前slice的下一个元素；
+```
+type Iterator struct {
+	slice []int64
+	index int
+}
+
+func (i *Iterator) HasNext() bool {
+	return i.index < len(i.slice)-1
+}
+
+func (i *Iterator) Next() {
+	i.index++
+}
+
+func (i *Iterator) Value() int64 {
+	return i.slice[i.index]
+}
+
+type SortedSlice struct {
+	slice []int64
+	Iterator
+}
+```
+堆的定义：
+```
+type HeapMerge struct {
+	nodes []*SortedSlice
+}
+```
+
+1. 构建一个n个元素的最小堆
+2. 从每路slice中取首个元素组成数组，调整堆；每次从堆顶，取一个元素，放入合并后的slice中
+     + 如果hasNext=true，执行当前node的Next()，重新调整当前的原因
+     + 如果hasNext=false, 当前slice已经空了，因此剔除堆顶, 然后需要重建堆，原因是堆中的父子关系已经破坏。
+```
+if h.nodes[0].HasNext() {
+	h.nodes[0].Next() //不需要获取值
+	h.adjust(0, len(h.nodes))
+} else { // 顶部的node(slice)已经为空
+	if len(h.nodes) >= 1 {
+		// 移除为已经合并完成的slice
+		h.nodes = h.nodes[1:]
+		//h.adjust(0, len(h.nodes))
+		h.Build()
+	} else {
+		return 0, errors.New("merge complete")
+	}
+}
+```
 ### 代码结构
 
 ![截屏2020-03-1318.33.34.png](https://upload-images.jianshu.io/upload_images/9243349-0c28af6a9d9f4e20.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
