@@ -45,7 +45,7 @@ type ConcurrentSorter struct {
 
 func NewConcurrent(src []int64) Sorter {
 	// 拆分成子任务并行完成
-	taskNum := runtime.NumCPU()
+	taskNum := runtime.NumCPU() * 2
 	return &ConcurrentSorter{
 		sortedChan: make(chan *MinInt64Slice, 1),
 		//mergeRetChan: make(chan []int64),
@@ -96,7 +96,7 @@ loop:
 		}
 	}
 	mergeTask := NewMergeTask(sortedSlices, mergedChan)
-	// 为避免死锁可以另外启动一个协程写入
+	// 为避免死锁,另外启动一个协程写入
 	m.pool.Put(mergeTask)
 }
 

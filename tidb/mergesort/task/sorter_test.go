@@ -10,7 +10,6 @@
 package task
 
 import (
-	"log"
 	"math/rand"
 	"testing"
 	"time"
@@ -28,5 +27,5 @@ func constructConcurrentSorter() *ConcurrentSorter {
 func TestConcurrentSorter_Run(t *testing.T) {
 	c := constructConcurrentSorter()
 	c.Run()
-	log.Println(c.sortingArray)
+	//log.Println(c.sortingArray)
 }

@@ -20,7 +20,6 @@ type SortTask struct {
 }
 
 func NewSortTask(src []int64, retChan chan *MinInt64Slice) *SortTask {
-	//log.Println("new SortTask")
 
 	return &SortTask{
 		sorter: algorithm.NewQuick(&MinInt64Slice{

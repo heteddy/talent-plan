@@ -18,51 +18,51 @@ import (
 )
 
 func TestSortTask_Run(t *testing.T) {
-	s := make([]int64, 0, 10)
+	s := make([]int64, 0, 100)
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < cap(s); i++ {
 		s = append(s, int64(r.Intn(10000)))
 	}
-
-	retChan := make(chan *MinInt64Slice)
-	defer close(retChan)
+	soredChan := make(chan *MinInt64Slice)
+	defer close(soredChan)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	//st := SortTask{
-	//	sorter:  algorithm.NewQuick(&MinInt64Slice{array: s}),
-	//	sortedChan: sortedChan,
-	//}
-	st := NewSortTask(s, retChan)
+	st := NewSortTask(s, soredChan)
 	go func() {
-		st.Run()
+		if err := st.Run(); err != nil {
+			panic(err)
+		}
 		wg.Done()
 	}()
 	select {
-	case ret := <-retChan:
-		log.Println(*ret.pSlice)
+	case ret := <-soredChan:
+		log.Println(ret.Len())
 	}
 	wg.Wait()
 }
 
 func TestMergeTask_Run(t *testing.T) {
-	retChan := make(chan *MemRecycleSlice)
-
+	mergedChan := make(chan []int64)
+	slices := make([][]int64, 0, 2)
+	slices = append(slices, []int64{2, 4, 6, 8, 10, 12, 200, 300})
+	slices = append(slices, []int64{1, 3, 5, 7, 9, 11})
 	mt := MergeTask{
-		slice1:  NewMemRecycleSlice([]int64{2, 4, 6, 8, 10, 12, 200, 300}),
-		slice2:  NewMemRecycleSlice([]int64{1, 3, 5, 7, 9, 11}),
-		retChan: retChan,
+		slices:  slices,
+		retChan: mergedChan,
 	}
-	defer close(retChan)
+	defer close(mergedChan)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
-		mt.Run()
+		if err := mt.Run(); err != nil {
+			panic(err)
+		}
 		wg.Done()
 	}()
 	select {
-	case ret := <-retChan:
-		log.Println(*ret.pSlice)
+	case ret := <-mergedChan:
+		log.Println(len(ret))
 	}
 	wg.Wait()
 }
